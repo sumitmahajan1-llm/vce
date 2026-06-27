@@ -1,0 +1,1793 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <script src="https://cdn.jsdelivr.net/npm/mermaid/dist/mermaid.min.js"></script>
+    <script>mermaid.initialize({startOnLoad:true});</script>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>VCE Strategist — Understand VCE Scoring</title>
+    <style>
+        :root {
+            --primary: #4F46E5;
+            --primary-light: #E0E7FF;
+            --bg: #F3F4F6;
+            --card: #FFFFFF;
+            --text: #1F2937;
+            --muted: #6B7280;
+            --success: #10B981;
+            --danger: #EF4444;
+            --border: #E5E7EB;
+            --warning-bg: #FFFBEB;
+            --warning-border: #F59E0B;
+        }
+
+        .progress-card {
+    box-shadow: 0 1px 3px rgba(0,0,0,0.05);
+}
+        * { box-sizing: border-box; }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+            background-color: var(--bg);
+            color: var(--text);
+            margin: 0;
+            padding: 20px;
+            line-height: 1.6;
+        }
+
+        .page-wrap {
+            max-width: 1000px;
+            margin: 0 auto;
+        }
+
+        .container {
+            background: var(--card);
+            padding: 30px;
+            border-radius: 12px;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+        }
+
+        /* Header & Nav */
+        .site-header {
+            margin-bottom: 24px;
+        }
+
+        .site-header h1 {
+            margin: 0 0 8px;
+            font-size: 26px;
+        }
+
+        .site-header p {
+            margin: 0;
+            color: var(--muted);
+            font-size: 15px;
+        }
+
+        .tab-nav {
+            display: flex;
+            gap: 8px;
+            margin-top: 20px;
+            border-bottom: 2px solid var(--bg);
+            padding-bottom: 0;
+        }
+
+        .tab-btn {
+            padding: 12px 20px;
+            border: none;
+            background: none;
+            font-size: 15px;
+            font-weight: 600;
+            color: var(--muted);
+            cursor: pointer;
+            border-bottom: 3px solid transparent;
+            margin-bottom: -2px;
+            transition: color 0.2s, border-color 0.2s;
+        }
+
+        .tab-btn:hover { color: var(--text); }
+
+        .tab-btn.active {
+            color: var(--primary);
+            border-bottom-color: var(--primary);
+        }
+
+        .tab-panel { display: none; }
+        .tab-panel.active { display: block; }
+
+        /* Learn section */
+        .hero {
+            background: linear-gradient(135deg, var(--primary-light) 0%, #F5F3FF 100%);
+            border-radius: 12px;
+            padding: 28px;
+            margin-bottom: 28px;
+        }
+
+        .hero h2 {
+            margin: 0 0 10px;
+            font-size: 22px;
+        }
+
+        .hero p {
+            margin: 0 0 16px;
+            font-size: 15px;
+        }
+
+        .hero-meta {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 12px;
+            font-size: 13px;
+            color: var(--muted);
+        }
+
+        .hero-meta span {
+            background: white;
+            padding: 4px 10px;
+            border-radius: 20px;
+        }
+
+        /* Flow diagram */
+        .flow-diagram {
+            display: flex;
+            flex-wrap: wrap;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            margin: 20px 0;
+            padding: 20px;
+            background: var(--bg);
+            border-radius: 10px;
+        }
+
+        .flow-step {
+            background: white;
+            border: 2px solid var(--border);
+            border-radius: 8px;
+            padding: 12px 16px;
+            text-align: center;
+            min-width: 120px;
+            font-size: 13px;
+        }
+
+        .flow-step strong {
+            display: block;
+            font-size: 14px;
+            margin-bottom: 4px;
+        }
+
+        .flow-step small { color: var(--muted); }
+
+        .flow-arrow {
+            font-size: 20px;
+            color: var(--primary);
+            font-weight: bold;
+        }
+
+        /* Lesson cards */
+        .lesson-list { display: flex; flex-direction: column; gap: 12px; }
+
+        .lesson-card {
+            border: 1px solid var(--border);
+            border-radius: 10px;
+            overflow: hidden;
+            background: white;
+        }
+
+        .lesson-header {
+            display: flex;
+            align-items: center;
+            gap: 14px;
+            padding: 16px 18px;
+            cursor: pointer;
+            user-select: none;
+            transition: background 0.15s;
+        }
+
+        .lesson-header:hover { background: var(--bg); }
+
+        .lesson-num {
+            flex-shrink: 0;
+            width: 36px;
+            height: 36px;
+            background: var(--primary);
+            color: white;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 700;
+            font-size: 14px;
+        }
+
+        .lesson-header-text { flex: 1; }
+
+        .lesson-header-text h3 {
+            margin: 0 0 2px;
+            font-size: 16px;
+        }
+
+        .lesson-header-text p {
+            margin: 0;
+            font-size: 13px;
+            color: var(--muted);
+        }
+
+        .lesson-chevron {
+            color: var(--muted);
+            transition: transform 0.2s;
+            font-size: 18px;
+        }
+
+        .lesson-card.open .lesson-chevron { transform: rotate(180deg); }
+
+        .lesson-body {
+            display: none;
+            padding: 0 18px 20px 68px;
+            font-size: 15px;
+        }
+
+        .lesson-card.open .lesson-body { display: block; }
+
+        .lesson-body ul, .lesson-body ol {
+            margin: 12px 0;
+            padding-left: 20px;
+        }
+
+        .lesson-body li { margin-bottom: 6px; }
+
+        .key-point {
+            background: var(--primary-light);
+            border-left: 4px solid var(--primary);
+            padding: 12px 14px;
+            border-radius: 0 8px 8px 0;
+            margin: 14px 0;
+            font-size: 14px;
+        }
+
+        .myth-box {
+            background: var(--warning-bg);
+            border: 1px solid var(--warning-border);
+            border-radius: 8px;
+            padding: 14px;
+            margin: 14px 0;
+            font-size: 14px;
+        }
+
+        .myth-box strong { color: #B45309; }
+
+        /* Mini comparison table */
+        .mini-table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 14px;
+            margin: 14px 0;
+        }
+
+        .mini-table th, .mini-table td {
+            border: 1px solid var(--border);
+            padding: 10px 12px;
+            text-align: left;
+        }
+
+        .mini-table th {
+            background: var(--bg);
+            font-weight: 600;
+        }
+
+        .mini-table .up { color: var(--success); font-weight: 600; }
+        .mini-table .down { color: var(--danger); font-weight: 600; }
+
+        /* Aggregate visual */
+        .aggregate-visual {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 8px;
+            margin: 16px 0;
+        }
+
+        .agg-block {
+            background: var(--primary-light);
+            border: 2px solid var(--primary);
+            border-radius: 8px;
+            padding: 12px 8px;
+            text-align: center;
+            font-size: 13px;
+        }
+
+        .agg-block.increment {
+            background: #FEF3C7;
+            border-color: var(--warning-border);
+            grid-column: span 2;
+            font-size: 12px;
+        }
+
+        .agg-block strong { display: block; font-size: 14px; }
+
+        /* Glossary */
+        .glossary {
+            margin-top: 32px;
+            padding-top: 24px;
+            border-top: 2px solid var(--bg);
+        }
+
+        .glossary h2 {
+            font-size: 18px;
+            margin: 0 0 16px;
+        }
+
+        .glossary-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+            gap: 12px;
+        }
+
+        .glossary-item {
+            background: var(--bg);
+            padding: 12px 14px;
+            border-radius: 8px;
+            font-size: 14px;
+        }
+
+        .glossary-item dt {
+            font-weight: 700;
+            margin-bottom: 4px;
+        }
+
+        .glossary-item dd {
+            margin: 0;
+            color: var(--muted);
+        }
+
+        /* CTA button */
+        .cta-btn {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 6px;
+            margin-top: 16px;
+            padding: 10px 18px;
+            background: var(--primary);
+            color: white;
+            border: none;
+            border-radius: 8px;
+            font-size: 14px;
+            font-weight: 600;
+            cursor: pointer;
+            text-decoration: none;
+            transition: background 0.2s;
+        }
+
+        .cta-btn:hover { background: #4338CA; }
+
+        .disclaimer {
+            margin-top: 28px;
+            padding: 14px;
+            background: var(--bg);
+            border-radius: 8px;
+            font-size: 13px;
+            color: var(--muted);
+        }
+
+        .disclaimer a { color: var(--primary); }
+
+        /* Calculator section (existing) */
+        .calc-intro {
+            margin-bottom: 20px;
+            padding-bottom: 16px;
+            border-bottom: 2px solid var(--bg);
+        }
+
+        .calc-intro h2 {
+            margin: 0 0 8px;
+            font-size: 20px;
+        }
+
+        .calc-intro p {
+            margin: 0;
+            color: var(--muted);
+            font-size: 14px;
+        }
+
+        .layout {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 40px;
+            margin-top: 20px;
+        }
+
+        @media (max-width: 768px) {
+            .layout { grid-template-columns: 1fr; }
+            .aggregate-visual { grid-template-columns: repeat(2, 1fr); }
+            .lesson-body { padding-left: 18px; }
+            .flow-diagram { flex-direction: column; }
+            .flow-arrow { transform: rotate(90deg); }
+        }
+
+        .form-group { margin-bottom: 15px; }
+
+        label {
+            display: block;
+            font-weight: 600;
+            margin-bottom: 5px;
+            font-size: 14px;
+        }
+
+        select, input {
+            width: 100%;
+            padding: 10px;
+            border: 1px solid var(--border);
+            border-radius: 6px;
+            font-size: 16px;
+        }
+
+        .subject-row {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 15px;
+            align-items: center;
+        }
+
+        .subject-row select { flex: 2; }
+        .subject-row input { flex: 1; }
+
+        .scaled-badge {
+            width: 60px;
+            text-align: center;
+            font-size: 14px;
+            font-weight: bold;
+            color: var(--primary);
+            background: var(--primary-light);
+            padding: 8px;
+            border-radius: 6px;
+            flex-shrink: 0;
+        }
+
+        .scaled-label {
+            font-size: 11px;
+            color: var(--muted);
+            text-align: center;
+            margin-top: 2px;
+        }
+
+        .results-panel {
+            background: var(--bg);
+            padding: 25px;
+            border-radius: 12px;
+        }
+
+        .gauge-container { margin-bottom: 30px; }
+
+        .gauge-bar-bg {
+            height: 30px;
+            background: #D1D5DB;
+            border-radius: 15px;
+            overflow: hidden;
+            position: relative;
+        }
+
+        .gauge-bar-fill {
+            height: 100%;
+            background: var(--primary);
+            width: 0%;
+            transition: width 0.3s ease, background-color 0.3s ease;
+        }
+
+        .target-marker {
+            position: absolute;
+            top: 0;
+            bottom: 0;
+            width: 4px;
+            background: #000;
+            z-index: 10;
+        }
+
+        .atar-display {
+            font-size: 48px;
+            font-weight: bold;
+            text-align: center;
+            margin: 10px 0;
+        }
+
+        .prereq-card {
+            background: white;
+            padding: 15px;
+            border-radius: 8px;
+            border-left: 4px solid var(--danger);
+            margin-bottom: 15px;
+        }
+
+        .prereq-card.met { border-left-color: var(--success); }
+
+        .breakdown {
+            font-size: 14px;
+            line-height: 1.6;
+            margin-top: 20px;
+        }
+
+        .subject-actions {
+            display: flex;
+            gap: 10px;
+            align-items: center;
+            margin-top: 8px;
+        }
+
+        .btn-secondary {
+            padding: 8px 14px;
+            border: 1px solid var(--border);
+            background: white;
+            border-radius: 6px;
+            font-size: 13px;
+            font-weight: 600;
+            cursor: pointer;
+            color: var(--text);
+        }
+
+        .btn-secondary:hover { background: var(--bg); }
+
+        .btn-secondary:disabled {
+            opacity: 0.45;
+            cursor: not-allowed;
+        }
+
+        .btn-remove {
+            flex-shrink: 0;
+            width: 36px;
+            height: 36px;
+            border: 1px solid var(--border);
+            background: white;
+            border-radius: 6px;
+            font-size: 18px;
+            line-height: 1;
+            cursor: pointer;
+            color: var(--muted);
+        }
+
+        .btn-remove:hover {
+            color: var(--danger);
+            border-color: var(--danger);
+            background: #FEF2F2;
+        }
+
+        .subject-count {
+            font-size: 13px;
+            color: var(--muted);
+        }
+
+        .predictor-section {
+            background: var(--bg);
+            border-radius: 12px;
+            padding: 24px;
+            margin-bottom: 28px;
+        }
+
+        .predictor-section h3 {
+            margin: 0 0 6px;
+            font-size: 18px;
+        }
+
+        .predictor-section > p {
+            margin: 0 0 20px;
+            font-size: 14px;
+            color: var(--muted);
+        }
+
+        .predictor-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 24px;
+        }
+
+        @media (max-width: 768px) {
+            .predictor-grid { grid-template-columns: 1fr; }
+        }
+
+        .predictor-card {
+            background: white;
+            border-radius: 10px;
+            padding: 18px;
+            border: 1px solid var(--border);
+        }
+
+        .predictor-card h4 {
+            margin: 0 0 14px;
+            font-size: 15px;
+        }
+
+        .input-row {
+            display: grid;
+            grid-template-columns: 1fr 100px;
+            gap: 10px;
+            align-items: center;
+            margin-bottom: 12px;
+        }
+
+        .input-row label {
+            margin: 0;
+            font-weight: 500;
+            font-size: 14px;
+        }
+
+        .input-row input, .input-row select {
+            padding: 8px 10px;
+            font-size: 14px;
+        }
+
+        .predictor-result {
+            margin-top: 24px;
+            padding: 20px;
+            background: white;
+            border-radius: 10px;
+            border: 2px solid var(--primary);
+        }
+
+        .predictor-result h4 {
+            margin: 0 0 12px;
+            font-size: 16px;
+        }
+
+        .predictor-atar {
+            font-size: 42px;
+            font-weight: bold;
+            color: var(--primary);
+            text-align: center;
+            margin: 8px 0;
+        }
+
+        .predictor-scores {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
+            gap: 8px;
+            margin: 16px 0;
+        }
+
+        .predictor-score-chip {
+            background: var(--primary-light);
+            padding: 8px 10px;
+            border-radius: 6px;
+            font-size: 13px;
+            text-align: center;
+        }
+
+        .predictor-score-chip strong {
+            display: block;
+            font-size: 18px;
+            color: var(--primary);
+        }
+
+        .confidence-badge {
+            display: inline-block;
+            font-size: 12px;
+            padding: 4px 10px;
+            border-radius: 20px;
+            background: var(--warning-bg);
+            color: #B45309;
+            font-weight: 600;
+            margin-bottom: 12px;
+        }
+
+        /* Early Predictor UI Enhancements */
+        .subject-chip-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+            gap: 10px;
+            margin-top: 12px;
+        }
+
+        .subject-chip-label {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 10px 14px;
+            background: white;
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            font-size: 13px;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            text-align: center;
+            user-select: none;
+            height: 100%;
+        }
+
+        .predictor-sub-check {
+            display: none; /* Hide the ugly native checkbox */
+        }
+
+        /* Styling for when a subject is selected */
+        .predictor-sub-check:checked + .subject-chip-label {
+            background: var(--primary-light);
+            border-color: var(--primary);
+            color: var(--primary);
+            font-weight: 600;
+            box-shadow: 0 2px 4px rgba(79, 70, 229, 0.1);
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(15px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .fade-in-active {
+            animation: fadeIn 0.5s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+        }
+    </style>
+</head>
+<body>
+
+<div class="page-wrap">
+    <div class="container">
+        <header class="site-header">
+            <h1>VCE Strategist</h1>
+            <p>A simple guide for parents new to the Victorian Certificate of Education</p>
+            <nav class="tab-nav" role="tablist">
+                <button class="tab-btn active" role="tab" aria-selected="true" data-tab="learn">Understand VCE</button>
+                <button class="tab-btn" role="tab" aria-selected="false" data-tab="predictor">Early Predictor</button>
+                <button class="tab-btn" role="tab" aria-selected="false" data-tab="calculator">Pathway Calculator</button>
+            </nav>
+        </header>
+
+        <section id="panel-learn" class="tab-panel active" role="tabpanel">
+
+            <div class="progress-card" id="readiness-tracker" style="background: white; padding: 20px; border-radius: 12px; margin-bottom: 20px; border: 1px solid var(--border);">
+            <h3 style="margin: 0 0 10px;">Your VCE Readiness</h3>
+        <div style="width: 100%; background: #e5e7eb; border-radius: 10px; height: 10px;">
+        <div id="progress-bar" style="width: 0%; background: var(--primary); height: 10px; border-radius: 10px; transition: width 0.3s ease;"></div>
+         </div>
+        <p style="font-size: 13px; color: var(--muted); margin: 8px 0 0;" id="progress-text">0/7 Lessons Completed</p>
+        </div>
+
+        <div style="background: #FFF; border: 1px solid var(--border); padding: 20px; border-radius: 10px; margin-top: 20px;">
+    <h3>⚠️ Critical Rules Often Overlooked</h3>
+    <ul style="font-size: 14px; color: var(--text);">
+        <li><strong>Adjustment Factors:</strong> Your ATAR is a rank, but your <em>Selection Rank</em> for university can be higher due to SEAS or subject bonuses.</li>
+        <li><strong>Group Restrictions:</strong> You can't "stack" too many subjects from the same category (e.g., three different maths). Check that your combination is <em>permissible</em>.</li>
+        <li><strong>EAL Eligibility:</strong> If you plan to take English as an Additional Language, verify your eligibility with your school now; it’s not an option for everyone.</li>
+    </ul>
+</div>
+
+            <div class="hero">
+                <h2>VCE scoring in 5 minutes</h2>
+                <p>New to VCE? Start here. These seven short lessons explain how study scores, scaling, and ATAR work — in plain language, without the jargon.</p>
+                <div class="hero-meta">
+                    <span>~15 min total</span>
+                    <span>Written for parents</span>
+                    <span>Based on official VTAC rules</span>
+                </div>
+            </div>
+
+            <div class="flow-diagram" aria-label="VCE scoring flow">
+                <div class="flow-step">
+                    <strong>Study Score</strong>
+                    <small>0–50 per subject</small>
+                </div>
+                <span class="flow-arrow" aria-hidden="true">→</span>
+                <div class="flow-step">
+                    <strong>Scaling</strong>
+                    <small>Adjusted by VTAC</small>
+                </div>
+                <span class="flow-arrow" aria-hidden="true">→</span>
+                <div class="flow-step">
+                    <strong>Aggregate</strong>
+                    <small>Total points (~210 max)</small>
+                </div>
+                <span class="flow-arrow" aria-hidden="true">→</span>
+                <div class="flow-step">
+                    <strong>ATAR</strong>
+                    <small>Percentile rank</small>
+                </div>
+                <span class="flow-arrow" aria-hidden="true">→</span>
+                <div class="flow-step">
+                    <strong>University</strong>
+                    <small>Course entry</small>
+                </div>
+            </div>
+
+            <div class="lesson-list">
+
+                <article class="lesson-card open">
+                    <div class="lesson-header" onclick="toggleLesson(this)">
+                        <div class="lesson-num">1</div>
+                        <div class="lesson-header-text">
+                            <h3>What is VCE?</h3>
+                            <p>The basics every parent should know first</p>
+                        </div>
+                        <span class="lesson-chevron" aria-hidden="true">▼</span>
+                    </div>
+                    <div class="lesson-body">
+                        <p>The <strong>Victorian Certificate of Education (VCE)</strong> is the main qualification students complete in Years 11 and 12 in Victoria. It is managed by the <strong>VCAA</strong> (Victorian Curriculum and Assessment Authority).</p>
+                        <ul>
+                            <li><strong>Units 1 & 2</strong> — usually studied in Year 11. Can be assessed but don't count toward the final ATAR on their own.</li>
+                            <li><strong>Units 3 & 4</strong> — usually studied in Year 12. These are the scored subjects that contribute to the ATAR.</li>
+                            <li><strong>English is mandatory</strong> — every student must complete at least one English-group subject at Units 3 & 4 (English, English Language, Literature, or EAL).</li>
+                            <li><strong>Most students take 5–6 subjects</strong> at Units 3 & 4 level to maximise their ATAR calculation.</li>
+                        </ul>
+                        <div class="key-point">
+                            <strong>Remember:</strong> VCE is the certificate. ATAR is the university ranking — calculated separately by VTAC from your child's VCE results.
+                        </div>
+                        <button class="cta-btn" onclick="goToCalculator()">Try it in the calculator →</button>
+                    </div>
+                </article>
+
+                <article class="lesson-card">
+                    <div class="lesson-header" onclick="toggleLesson(this)">
+                        <div class="lesson-num">2</div>
+                        <div class="lesson-header-text">
+                            <h3>What is a study score?</h3>
+                            <p>Understanding the 0–50 ranking for each subject</p>
+                        </div>
+                        <span class="lesson-chevron" aria-hidden="true">▼</span>
+                    </div>
+                    <div class="lesson-body">
+                        <p>After Year 12 exams, the VCAA gives each student a <strong>study score</strong> for each Units 3 & 4 subject. This is a ranking from 0 to 50.</p>
+                        <table class="mini-table">
+                            <thead>
+                                <tr><th>Study Score</th><th>What it means</th></tr>
+                            </thead>
+                            <tbody>
+                                <tr><td><strong>30</strong></td><td>Average — about half the students scored above, half below</td></tr>
+                                <tr><td><strong>40+</strong></td><td>Top ~9% of students in that subject statewide</td></tr>
+                                <tr><td><strong>45+</strong></td><td>Exceptional — top ~2%</td></tr>
+                                <tr><td><strong>Below 25</strong></td><td>Below average — may affect course prerequisites</td></tr>
+                            </tbody>
+                        </table>
+                        <p>Study scores combine school-assessed coursework (SACs) and the end-of-year exam. They reflect how your child performed <em>relative to everyone else</em> taking that subject — not a percentage mark.</p>
+                        <div class="key-point">
+                            <strong>Parent tip:</strong> A study score of 30 is not a "pass mark" or 60%. It means your child performed exactly at the state average for that subject.
+                        </div>
+                        <button class="cta-btn" onclick="goToCalculator()">Try it in the calculator →</button>
+                    </div>
+                </article>
+
+                <article class="lesson-card">
+                    <div class="lesson-header" onclick="toggleLesson(this)">
+                        <div class="lesson-num">3</div>
+                        <div class="lesson-header-text">
+                            <h3>What is scaling?</h3>
+                            <p>Why the same raw score can become different ATAR points</p>
+                        </div>
+                        <span class="lesson-chevron" aria-hidden="true">▼</span>
+                    </div>
+                    <div class="lesson-body">
+                        <p>Before calculating the ATAR, <strong>VTAC scales</strong> each study score. Scaling adjusts scores so students taking different subject combinations can be compared fairly.</p>
+                        <p>Scaling does <strong>not</strong> measure how hard a subject is. It reflects the performance of the <em>group of students</em> who chose that subject — specifically, how that group performed across all their other subjects compared to the whole state.</p>
+                        <table class="mini-table">
+                            <thead>
+                                <tr><th>Subject (example raw 35)</th><th>Typical scaled result</th><th>Direction</th></tr>
+                            </thead>
+                            <tbody>
+                                <tr><td>Specialist Mathematics</td><td>~43</td><td class="up">↑ scales up</td></tr>
+                                <tr><td>Mathematical Methods</td><td>~37</td><td class="up">↑ scales up</td></tr>
+                                <tr><td>English</td><td>~35</td><td>→ stays similar</td></tr>
+                                <tr><td>Business Management</td><td>~33</td><td class="down">↓ scales down</td></tr>
+                            </tbody>
+                        </table>
+                        <p><em>Figures are illustrative examples based on recent VTAC reports. Actual scaling changes every year.</em></p>
+                        <div class="myth-box">
+                            <strong>Common myth:</strong> "Easy subjects scale up and hard subjects scale down."<br>
+                            <strong>Reality:</strong> Scaling follows the cohort, not the curriculum. A subject scales up when the students taking it tend to be high achievers across all their subjects.
+                        </div>
+                        <div class="key-point">
+                            <strong>Important:</strong> Scaled scores can go above 50 (up to about 55) for very competitive subjects. This is why top aggregates can exceed 210.
+                        </div>
+                        <button class="cta-btn" onclick="goToCalculator()">Try it in the calculator →</button>
+                    </div>
+                </article>
+
+                <article class="lesson-card">
+                    <div class="lesson-header" onclick="toggleLesson(this)">
+                        <div class="lesson-num">4</div>
+                        <div class="lesson-header-text">
+                            <h3>How is ATAR calculated?</h3>
+                            <p>The aggregate formula explained step by step</p>
+                        </div>
+                        <span class="lesson-chevron" aria-hidden="true">▼</span>
+                    </div>
+                    <div class="lesson-body">
+                        <p>VTAC combines your child's <strong>scaled study scores</strong> into a single number called the <strong>aggregate</strong>, then converts that to an ATAR percentile rank.</p>
+                        <p><strong>Step 1 — Primary four subjects (full value):</strong></p>
+                        <div class="aggregate-visual">
+                            <div class="agg-block"><strong>English</strong>Must include one</div>
+                            <div class="agg-block"><strong>Best #2</strong>Highest scaled</div>
+                            <div class="agg-block"><strong>Best #3</strong>Next highest</div>
+                            <div class="agg-block"><strong>Best #4</strong>Next highest</div>
+                        </div>
+                        <p><strong>Step 2 — Increments (10% each):</strong></p>
+                        <div class="aggregate-visual">
+                            <div class="agg-block increment"><strong>10% of 5th subject</strong> added to aggregate</div>
+                            <div class="agg-block increment"><strong>10% of 6th subject</strong> added to aggregate</div>
+                        </div>
+                        <p><strong>Step 3 — Rank the cohort:</strong> All students' aggregates are sorted. Your child's position on this list becomes their ATAR.</p>
+                        <table class="mini-table">
+                            <thead>
+                                <tr><th>Target ATAR</th><th>Approx. aggregate needed (2025 guide)</th></tr>
+                            </thead>
+                            <tbody>
+                                <tr><td>99.00</td><td>~192</td></tr>
+                                <tr><td>95.00</td><td>~170</td></tr>
+                                <tr><td>90.00</td><td>~155</td></tr>
+                                <tr><td>80.00</td><td>~136</td></tr>
+                                <tr><td>70.00</td><td>~117</td></tr>
+                            </tbody>
+                        </table>
+                        <p><em>Based on VTAC 2025 aggregate-to-ATAR data. Figures vary each year.</em></p>
+                        <div class="key-point">
+                            <strong>Example:</strong> English (32) + Methods (38) + Chemistry (35) + Psychology (31) = 136 aggregate primary four. If a 5th subject scaled to 28, add 2.8 (10%) → total aggregate ≈ 138.8 → estimated ATAR ~82.
+                        </div>
+                        <button class="cta-btn" onclick="goToCalculator()">Try it in the calculator →</button>
+                    </div>
+                </article>
+
+                <article class="lesson-card">
+                    <div class="lesson-header" onclick="toggleLesson(this)">
+                        <div class="lesson-num">5</div>
+                        <div class="lesson-header-text">
+                            <h3>Subject selection — myths vs facts</h3>
+                            <p>What to actually consider when choosing VCE subjects</p>
+                        </div>
+                        <span class="lesson-chevron" aria-hidden="true">▼</span>
+                    </div>
+                    <div class="lesson-body">
+                        <div class="myth-box">
+                            <strong>Myth:</strong> "Pick subjects that scale up to get a high ATAR."<br>
+                            <strong>Fact:</strong> Scaling rewards performance, not subject choice alone. A raw 40 in Business beats a raw 25 in Specialist Maths for your aggregate — even though Specialist scales higher.
+                        </div>
+                        <div class="myth-box">
+                            <strong>Myth:</strong> "You need six science subjects for Medicine."<br>
+                            <strong>Fact:</strong> Most medicine pathways require Chemistry and strong English/Maths. Biology helps but isn't always mandatory. Check each university's prerequisites.
+                        </div>
+                        <div class="myth-box">
+                            <strong>Myth:</strong> "General Maths is fine for Engineering."<br>
+                            <strong>Fact:</strong> Engineering courses typically require Mathematical Methods (or Specialist) as a prerequisite — General Maths usually won't qualify.
+                        </div>
+                        <p><strong>What actually matters when choosing subjects:</strong></p>
+                        <ol>
+                            <li><strong>Prerequisites</strong> — does the course your child wants require this subject?</li>
+                            <li><strong>Strengths & interest</strong> — students perform best in subjects they enjoy and excel at</li>
+                            <li><strong>Workload balance</strong> — a manageable load leads to better scores across all subjects</li>
+                            <li><strong>Scaling as a tiebreaker</strong> — only relevant when two subjects are otherwise equal choices</li>
+                        </ol>
+                        <button class="cta-btn" onclick="goToCalculator()">Try it in the calculator →</button>
+                    </div>
+                </article>
+
+                <article class="lesson-card">
+                    <div class="lesson-header" onclick="toggleLesson(this)">
+                        <div class="lesson-num">6</div>
+                        <div class="lesson-header-text">
+                            <h3>Prerequisites vs ATAR</h3>
+                            <p>Why meeting the ATAR cut-off isn't always enough</p>
+                        </div>
+                        <span class="lesson-chevron" aria-hidden="true">▼</span>
+                    </div>
+                    <div class="lesson-body">
+                        <p>Universities set two types of requirements for course entry:</p>
+                        <table class="mini-table">
+                            <thead>
+                                <tr><th>Requirement</th><th>What it is</th><th>Example</th></tr>
+                            </thead>
+                            <tbody>
+                                <tr><td><strong>ATAR cut-off</strong></td><td>Minimum rank to be competitive for a place</td><td>Biomedicine ~95.00</td></tr>
+                                <tr><td><strong>Prerequisites</strong></td><td>Specific subjects with minimum study scores</td><td>Chemistry ≥ 25, Methods ≥ 25</td></tr>
+                            </tbody>
+                        </table>
+                        <p>A student can have an ATAR of 96 but miss out on Biomedicine if they didn't take Chemistry. Conversely, meeting all prerequisites but falling short on ATAR means they won't receive an offer either.</p>
+                        <div class="key-point">
+                            <strong>Both must be satisfied.</strong> Use the Pathway Calculator to check whether your child's expected scores meet both the ATAR target and subject prerequisites for their chosen course.
+                        </div>
+                        <p>Prerequisites are usually checked against <strong>raw study scores</strong> (before scaling), while the ATAR uses <strong>scaled scores</strong>.</p>
+                        <button class="cta-btn" onclick="goToCalculator()">Try it in the calculator →</button>
+                    </div>
+                </article>
+
+                <article class="lesson-card">
+                    <div class="lesson-header" onclick="toggleLesson(this)">
+                        <div class="lesson-num">7</div>
+                        <div class="lesson-header-text">
+                            <h3>When should you start planning?</h3>
+                            <p>A timeline for parents from Year 9 to Year 12</p>
+                        </div>
+                        <span class="lesson-chevron" aria-hidden="true">▼</span>
+                    </div>
+                    <div class="lesson-body">
+                        <table class="mini-table">
+                            <thead>
+                                <tr><th>Year</th><th>Focus</th><th>Action for parents</th></tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td><strong>Year 9–10</strong></td>
+                                    <td>Explore interests, build foundations</td>
+                                    <td>Research career paths. Ensure Maths/Science foundations if considering STEM or health courses.</td>
+                                </tr>
+                                <tr>
+                                    <td><strong>Year 11</strong></td>
+                                    <td>Subject selection for Units 3 & 4</td>
+                                    <td>Check university prerequisites now. Confirm English + required subjects are in the plan. Some students accelerate (do a Unit 3/4 in Year 11).</td>
+                                </tr>
+                                <tr>
+                                    <td><strong>Year 12</strong></td>
+                                    <td>Execute and track progress</td>
+                                    <td>Use SAC results to estimate study scores. Adjust study focus. Use the calculator to see if you're on track for target courses.</td>
+                                </tr>
+                                <tr>
+                                    <td><strong>Results day</strong></td>
+                                    <td>ATAR released mid-December</td>
+                                    <td>VTAC publishes official scaled scores and ATAR. Change of Preference period follows for course applications.</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                        <div class="key-point">
+                            <strong>The biggest mistake:</strong> Leaving prerequisite checks until Year 12. By then, it's too late to add Chemistry or Methods if they weren't selected in Year 11.
+                        </div>
+                        <button class="cta-btn" onclick="goToPredictor()">Try the Early Predictor →</button>
+                        <button class="cta-btn" style="margin-left: 8px; background: white; color: var(--primary); border: 2px solid var(--primary);" onclick="goToCalculator()">Pathway Calculator →</button>
+                    </div>
+                </article>
+
+            </div>
+
+
+            <div class="mermaid">
+             graph TD
+             %% Define styles for nodes
+                classDef process fill:#f9f9f9,stroke:#4F46E5,stroke-width:2px;
+                classDef calc fill:#E0E7FF,stroke:#4F46E5,stroke-width:2px;
+    
+                A[Raw Scores] --> B(Raw Study Score)
+                B --> C(Scaled Study Score)
+                C --> D{Aggregate Formula}
+                D -->|Primary 4| E[English + 3 Best]
+                D -->|Increments| F[10% of 5th/6th]
+                E --> G[Total Aggregate]
+                F --> G
+                G --> H((FINAL ATAR))
+    
+                class A,B,C,E,F,G process;
+                class D,H calc;
+            </div>
+            
+            <div class="mermaid">
+    graph LR
+    %% Subject Nodes
+    Eng[English: 35]
+    Meth[Math Methods: 40]
+    Phys[Physics: 38]
+    Chem[Chemistry: 37]
+    Bio[Biology: 32]
+    EI[Extended Inv: 36]
+
+    %% Process Nodes
+    subgraph PrimaryFour [Primary Four]
+    Eng --> P1[33.0 Scaled]
+    Meth --> P2[46.0 Scaled]
+    Phys --> P3[40.4 Scaled]
+    Chem --> P4[41.0 Scaled]
+    end
+
+    subgraph Increments [Increments]
+    EI --> I1[3.8 pts]
+    Bio --> I2[3.3 pts]
+    end
+
+    P1 & P2 & P3 & P4 --> Sum1(Aggregate Sum: 160.4)
+    I1 & I2 --> Sum2(Increments: 7.1)
+    Sum1 --> Final(Total: 167.5)
+    Sum2 --> Final
+    Final --> ATAR((ATAR: 95.8))
+
+    %% Styling
+    style ATAR fill:#4F46E5,stroke:#fff,color:#fff
+    style Final fill:#E0E7FF
+</div>
+
+<div style="background: #FEF3C7; padding: 15px; border-radius: 8px; margin-top: 15px; font-size: 14px; border: 1px solid #F59E0B;">
+    <strong>Example: Bachelor of Science (UniMelb) Pathway</strong>
+    <p style="margin: 5px 0 0;">
+        This student successfully used <strong>Math Methods</strong> and <strong>Chemistry</strong> to meet prerequisites. 
+        Because their <strong>Physics</strong> scaled higher than their <strong>Biology</strong>, it was selected in the Primary Four, 
+        while Biology and Extended Investigation contributed to the 10% increments, pushing the ATAR to a competitive <strong>96.00</strong>.
+    </p>
+</div>
+            <!-- Glossary -->
+            <section class="glossary">
+                <h2>Quick glossary</h2>
+                <dl class="glossary-grid">
+                    <div class="glossary-item">
+                        <dt><a href="https://www.vcaa.vic.edu.au/" target="_blank" rel="noopener">VCAA</a></dt>
+                        <dd>Victorian Curriculum and Assessment Authority — runs VCE exams and publishes study scores.</dd>
+                    </div>
+                    <div class="glossary-item">
+                        <dt><a href="https://vtac.edu.au/" target="_blank" rel="noopener">VTAC</a></dt>
+                        <dd>Victorian Tertiary Admissions Centre — scales scores, calculates ATAR, manages uni applications.</dd>
+                    </div>
+                    <div class="glossary-item">
+                        <dt><a href="https://www.vcaa.vic.edu.au/assessment/vce-assessment/how-vce-assessments-scored/Pages/StudyScores.aspx" target="_blank" rel="noopener">Study score</a></dt>
+                        <dd>Your ranking in one subject, from 0–50. 30 = state average.</dd>
+                    </div>
+                    <div class="glossary-item">
+                        <dt><a href="https://vtac.edu.au/guides/atar-scaling-guide-2026.html" target="_blank" rel="noopener">Scaled score</a></dt>
+                        <dd>VTAC's adjusted version of a study score (0–55), used for ATAR calculation.</dd>
+                    </div>
+                    <div class="glossary-item">
+                        <dt><a href="https://vtac.edu.au/guides/atar-scaling-guide-2026.html" target="_blank" rel="noopener">Aggregate</a></dt>
+                        <dd>Sum of primary four scaled scores plus 10% increments. Max ~210+.</dd>
+                    </div>
+                    <div class="glossary-item">
+                        <dt><a href="https://vtac.edu.au/guides/atar-scaling-guide-2026.html" target="_blank" rel="noopener">ATAR</a></dt>
+                        <dd>Australian Tertiary Admission Rank — percentile from 0 to 99.95. 90.00 = top 10%.</dd>
+                    </div>
+                    <div class="glossary-item">
+                        <dt><a href="https://www.vcaa.vic.edu.au/assessment/vce-assessment/school-based-assessment/Pages/Index.aspx" target="_blank" rel="noopener">SAC</a></dt>
+                        <dd>School-Assessed Coursework — internal assessments that contribute to the study score.</dd>
+                    </div>
+                    <div class="glossary-item">
+                        <dt><a href="https://vtac.edu.au/coursesearch" target="_blank" rel="noopener">Prerequisite</a></dt>
+                        <dd>A required VCE subject (with minimum score) you must complete to apply for a course.</dd>
+                    </div>
+                </dl>
+            </section>
+
+            <div class="disclaimer">
+                <strong>Disclaimer:</strong> This guide is for educational purposes only. Scaling data in the calculator uses illustrative estimates — not official VTAC figures. Always refer to the
+                <a href="https://vtac.edu.au/guides/atar-scaling-guide-2026.html" target="_blank" rel="noopener">official VTAC ATAR and Scaling Guide</a>
+                and your school's VCE coordinator for authoritative advice.
+            </div>
+
+        </section>
+
+        <section id="panel-predictor" class="tab-panel" role="tabpanel">
+            <div class="calc-intro">
+                <h2>Early ATAR Predictor</h2>
+                <p>Estimate a likely ATAR range from Year 9 NAPLAN bands and Year 10 exam results — useful before VCE subject scores exist. Predictions are illustrative only.</p>
+            </div>
+
+            <div class="predictor-section">
+                <h3>1. Enter early performance data</h3>
+                <p>NAPLAN uses bands 1–10 (6 = national average). Year 10 exams are school percentages (e.g. 75%).</p>
+
+                <div class="predictor-grid">
+                    <div class="predictor-card">
+                        <h4>Year 9 NAPLAN bands</h4>
+                        <div class="input-row">
+                            <label for="naplan-reading">Reading</label>
+                            <select id="naplan-reading"><option value="4">4</option><option value="5">5</option><option value="6" selected>6</option><option value="7">7</option><option value="8">8</option><option value="9">9</option><option value="10">10</option></select>
+                        </div>
+                        <div class="input-row">
+                            <label for="naplan-writing">Writing</label>
+                            <select id="naplan-writing"><option value="4">4</option><option value="5">5</option><option value="6" selected>6</option><option value="7">7</option><option value="8">8</option><option value="9">9</option><option value="10">10</option></select>
+                        </div>
+                        <div class="input-row">
+                            <label for="naplan-numeracy">Numeracy</label>
+                            <select id="naplan-numeracy"><option value="4">4</option><option value="5">5</option><option value="6" selected>6</option><option value="7">7</option><option value="8">8</option><option value="9">9</option><option value="10">10</option></select>
+                        </div>
+                    </div>
+
+                    <div class="predictor-card">
+                        <h4>Year 10 exam results (%)</h4>
+                        <div class="input-row">
+                            <label for="y10-english">English</label>
+                            <input type="number" id="y10-english" value="65" min="0" max="100">
+                        </div>
+                        <div class="input-row">
+                            <label for="y10-maths">Mathematics</label>
+                            <input type="number" id="y10-maths" value="65" min="0" max="100">
+                        </div>
+                        <div class="input-row">
+                            <label for="y10-science">Science</label>
+                            <input type="number" id="y10-science" value="65" min="0" max="100">
+                        </div>
+                        <div class="input-row">
+                            <label for="y10-other">Other subjects avg.</label>
+                            <input type="number" id="y10-other" value="65" min="0" max="100">
+                        </div>
+                    </div>
+                </div>
+
+                <div class="predictor-card" style="margin-top: 24px;">
+                    <h3>2. Configure pathway & subjects</h3>
+                    
+                    <div class="form-group" style="margin-top: 16px;">
+                        <label for="predictor-course">Planned university pathway (for context)</label>
+                        <select id="predictor-course">
+                            <option value="commerce">Bachelor of Commerce (ATAR: 85.00)</option>
+                            <option value="engineering">Bachelor of Engineering (ATAR: 80.00)</option>
+                            <option value="arts">Bachelor of Arts (ATAR: 70.00)</option>
+                            <optgroup label="UniMelb Science Streams">
+                                <option value="biomed">Bachelor of Biomedicine (ATAR: 95.00)</option>
+                                <option value="science">Bachelor of Science (ATAR: 88.00)</option>
+                                <option value="agriculture">Bachelor of Agriculture (ATAR: 72.00)</option>
+                            </optgroup>
+                        </select>
+                    </div>
+
+                    <div class="form-group" style="margin-top: 20px;">
+                        <label>Planned VCE subjects (select up to 5)</label>
+                        <p style="font-size: 13px; color: var(--muted); margin: 4px 0 0;">English is automatically included. Choose electives your child is likely to take.</p>
+                        <div id="predictor-subjects"></div>
+                    </div>
+                </div>
+
+                <div style="text-align: center; margin-top: 28px;">
+                    <button class="cta-btn" type="button" onclick="runPrediction()" style="padding: 14px 28px; font-size: 16px;">Calculate predicted ATAR</button>
+                </div>
+
+                <div class="predictor-result" id="predictor-result" style="display: none;">
+                    <span class="confidence-badge">Early estimate — not official</span>
+                    <h4>Predicted outcome</h4>
+                    <div class="predictor-atar" id="predictor-atar">—</div>
+                    <p style="text-align: center; font-size: 14px; color: var(--muted); margin: 0;" id="predictor-target-gap"></p>
+
+                    <p style="font-size: 14px; margin: 16px 0 8px;"><strong>Predicted VCE study scores (raw, before scaling):</strong></p>
+                    <div class="predictor-scores" id="predictor-scores"></div>
+
+                    <div class="key-point" style="margin-top: 16px; font-size: 13px;">
+                        <strong>How this works:</strong> NAPLAN bands and Year 10 % marks are converted to estimated study scores (Year 10 weighted 65%, NAPLAN 35%). A small growth adjustment (+1.5) reflects typical improvement by Year 12. Scores are then scaled and aggregated using the same ATAR formula as the Pathway Calculator.
+                    </div>
+
+                    <div style="text-align: center; margin-top: 20px;">
+                        <button class="cta-btn" type="button" onclick="applyPredictionToCalculator()">Apply scores to Pathway Calculator →</button>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section id="panel-calculator" class="tab-panel" role="tabpanel">
+
+            <div class="calc-intro">
+                <h2>Pathway Calculator</h2>
+                <p>Enter expected study scores to estimate your ATAR and check course prerequisites. Scaled scores shown are illustrative — Phase 2 will use official VTAC data.</p>
+            </div>
+
+            <div class="layout">
+                <div>
+                    <div class="form-group">
+                        <label for="course-select">1. Select target university course</label>
+                       <select id="course-select">
+                            <option value="commerce">Bachelor of Commerce (ATAR: 85.00)</option>
+                            <option value="engineering">Bachelor of Engineering (ATAR: 80.00)</option>
+                            <option value="arts">Bachelor of Arts (ATAR: 70.00)</option>
+                            <optgroup label="UniMelb Science Streams">
+                                <option value="biomed">Bachelor of Biomedicine (ATAR: 95.00)</option>
+                                <option value="science">Bachelor of Science (ATAR: 88.00)</option>
+                                <option value="agriculture">Bachelor of Agriculture (ATAR: 72.00)</option>
+                            </optgroup>
+                        </select>
+                    </div>
+
+                    <label style="margin-top: 30px;">2. Input expected raw study scores (0–50)</label>
+                    <p style="font-size: 13px; color: var(--muted); margin: 4px 0 12px;">Raw = VCAA study score before scaling. Scaled column shows VTAC-adjusted estimate.</p>
+
+                    <div class="subject-row">
+                        <select class="sub-name" disabled aria-label="English subject"><option value="english">English (Mandatory)</option></select>
+                        <input type="number" class="sub-score" value="30" min="0" max="50" aria-label="English raw score">
+                        <div>
+                            <div class="scaled-badge">30.0</div>
+                            <div class="scaled-label">scaled</div>
+                        </div>
+                    </div>
+
+                    <div id="subject-container"></div>
+
+                    <div class="subject-actions">
+                        <button type="button" class="btn-secondary" id="add-subject-btn" onclick="addSubjectRow()">+ Add subject</button>
+                        <span class="subject-count" id="subject-count"></span>
+                    </div>
+                </div>
+
+                <div class="results-panel">
+                    <div class="gauge-container">
+                        <label style="text-align: center; font-size: 18px;">Estimated ATAR</label>
+                        <div class="atar-display" id="atar-result">0.00</div>
+                        <div class="gauge-bar-bg">
+                            <div class="gauge-bar-fill" id="gauge-fill"></div>
+                            <div class="target-marker" id="target-marker" title="Target ATAR"></div>
+                        </div>
+                        <div style="text-align: center; margin-top: 5px; font-size: 14px;" id="distance-text"></div>
+                    </div>
+
+                    <label>Course prerequisites</label>
+                    <div id="prereq-container"></div>
+
+                    <div class="breakdown" id="breakdown-text">
+                        <strong>Aggregate calculation:</strong><br>
+                        Top 4 (incl. English): 0<br>
+                        10% of 5th subject: 0<br>
+                        Total aggregate: 0
+                    </div>
+                </div>
+            </div>
+
+        </section>
+    </div>
+</div>
+
+
+
+<script>
+    // --- Readiness Tracker Logic ---
+const totalLessons = 7;
+let completedLessons = new Set(JSON.parse(localStorage.getItem('vce_progress') || '[]'));
+
+function updateProgress() {
+    const progress = (completedLessons.size / totalLessons) * 100;
+    document.getElementById('progress-bar').style.width = `${progress}%`;
+    document.getElementById('progress-text').innerText = `${completedLessons.size}/${totalLessons} Lessons Completed`;
+}
+
+// Wrap your existing toggleLesson to include the tracker
+const originalToggle = window.toggleLesson;
+window.toggleLesson = function(header) {
+    // Call original function
+    originalToggle(header);
+    
+    // Logic to add to completed set
+    const lessonNum = header.querySelector('.lesson-num').innerText;
+    completedLessons.add(lessonNum);
+    localStorage.setItem('vce_progress', JSON.stringify([...completedLessons]));
+    updateProgress();
+};
+
+// Initialize on load
+document.addEventListener('DOMContentLoaded', updateProgress);
+
+    const MAX_ELECTIVE_SUBJECTS = 5;
+    const MIN_ELECTIVE_SUBJECTS = 1;
+
+    const mockScaling = {
+        'english': -2,
+        'methods': 6,
+        'specialist': 13,
+        'general_maths': -2,
+        'chemistry': 4,
+        'physics': 2,
+        'biology': 1,
+        'business': -3,
+        'psychology': -1,
+        'history': -1,
+        'legal': -1,
+        'economics': 2,
+        'health': -4,
+        'pe': -2,
+        'accounting': 1,
+        'it': -2,
+        'music': 2,
+        'art': -3
+    };
+
+    // VTAC data points for raw scores: [20, 25, 30, 35, 40, 45, 50]
+    const vtacScalingCurves = {
+        'english':       [17, 22, 28, 33, 39, 45, 50],
+        'methods':       [22, 28, 35, 41, 46, 49, 50],
+        'specialist':    [31, 37, 43, 48, 51, 54, 55],
+        'general_maths': [17, 22, 28, 33, 38, 44, 49],
+        'chemistry':     [22, 28, 34, 39, 44, 47, 50],
+        'physics':       [20, 26, 32, 37, 42, 47, 50],
+        'biology':       [19, 25, 31, 36, 41, 46, 50],
+        'business':      [16, 22, 28, 32, 38, 44, 49],
+        'psychology':    [18, 23, 28, 34, 39, 45, 50],
+        'history':       [19, 24, 30, 34, 40, 46, 50],
+        'legal':         [18, 24, 29, 34, 40, 46, 50],
+        'economics':     [21, 26, 32, 37, 42, 47, 50],
+        'health':        [16, 21, 27, 31, 37, 43, 49],
+        'pe':            [17, 22, 28, 33, 38, 44, 49],
+        'accounting':    [20, 25, 31, 36, 41, 46, 50],
+        'it':            [17, 23, 29, 33, 39, 45, 50],
+        'music':         [21, 26, 32, 37, 42, 47, 50],
+        'art':           [16, 22, 27, 32, 38, 44, 49],
+        'extended_investigation': [22, 27, 33, 38, 42, 47, 50]
+    };
+
+    function getScaledScore(subjectName, rawScore) {
+        const curve = vtacScalingCurves[subjectName];
+        if (!curve) return rawScore; // Fallback if subject not found
+        
+        if (rawScore <= 20) return Math.max(0, curve[0] - (20 - rawScore));
+        if (rawScore >= 50) return Math.min(55, curve[6] + (rawScore - 50));
+        
+        // Find which bracket the score falls into
+        const brackets = [20, 25, 30, 35, 40, 45, 50];
+        for (let i = 0; i < brackets.length - 1; i++) {
+            if (rawScore >= brackets[i] && rawScore <= brackets[i+1]) {
+                const x0 = brackets[i];
+                const x1 = brackets[i+1];
+                const y0 = curve[i];
+                const y1 = curve[i+1];
+                
+                // Linear interpolation formula
+                return y0 + ((rawScore - x0) * (y1 - y0)) / (x1 - x0);
+            }
+        }
+        return rawScore;
+    }
+    
+    const subjectNames = {
+        'methods': 'Math Methods',
+        'specialist': 'Specialist Math',
+        'general_maths': 'General Maths',
+        'chemistry': 'Chemistry',
+        'physics': 'Physics',
+        'biology': 'Biology',
+        'business': 'Business Management',
+        'psychology': 'Psychology',
+        'history': 'History',
+        'legal': 'Legal Studies',
+        'economics': 'Economics',
+        'health': 'Health & Human Dev.',
+        'pe': 'Physical Education',
+        'accounting': 'Accounting',
+        'it': 'Applied Computing',
+        'music': 'Music',
+        'art': 'Visual Arts',
+        'extended_investigation': 'Extended Investigation' 
+    };
+
+    const courses = {
+        'commerce': { target: 85.00, prereqs: [{ name: 'English', min: 25 }, { name: 'Math Methods', id: 'methods', min: 25 }] },
+        'engineering': { target: 80.00, prereqs: [{ name: 'English', min: 25 }, { name: 'Math Methods or Spec', id: ['methods', 'specialist'], min: 25 }] },
+        'arts': { target: 70.00, prereqs: [{ name: 'English', min: 25 }] },
+        // Updated Science Pathways for UniMelb
+        'biomed': { target: 95.00, prereqs: [{ name: 'English', min: 25 }, { name: 'Chemistry', id: 'chemistry', min: 25 }, { name: 'Math Methods or Spec', id: ['methods', 'specialist'], min: 25 }] },
+        'science': { target: 88.00, prereqs: [{ name: 'English', min: 25 }, { name: 'Math Methods or Spec', id: ['methods', 'specialist'], min: 25 }, { name: 'Biology, Chemistry, or Physics', id: ['biology', 'chemistry', 'physics'], min: 25 }] },
+        'agriculture': { target: 72.00, prereqs: [{ name: 'English', min: 25 }, { name: 'Any Mathematics', id: ['methods', 'specialist', 'general_maths'], min: 25 }] }
+    };
+
+    let lastPrediction = null;
+
+    // --- Tab navigation ---
+    document.querySelectorAll('.tab-btn').forEach(btn => {
+        btn.addEventListener('click', () => {
+            const tab = btn.dataset.tab;
+            document.querySelectorAll('.tab-btn').forEach(b => {
+                b.classList.toggle('active', b.dataset.tab === tab);
+                b.setAttribute('aria-selected', b.dataset.tab === tab);
+            });
+            document.querySelectorAll('.tab-panel').forEach(p => {
+                p.classList.toggle('active', p.id === `panel-${tab}`);
+            });
+        });
+    });
+
+    function goToCalculator() {
+        document.querySelector('[data-tab="calculator"]').click();
+        document.getElementById('panel-calculator').scrollIntoView({ behavior: 'smooth' });
+    }
+
+    function goToPredictor() {
+        document.querySelector('[data-tab="predictor"]').click();
+        document.getElementById('panel-predictor').scrollIntoView({ behavior: 'smooth' });
+    }
+
+    function toggleLesson(header) {
+        const card = header.closest('.lesson-card');
+        const isOpen = card.classList.contains('open');
+        document.querySelectorAll('.lesson-card').forEach(c => c.classList.remove('open'));
+        if (!isOpen) card.classList.add('open');
+    }
+
+    function buildSubjectOptions(selected) {
+        return Object.keys(subjectNames).map(k =>
+            `<option value="${k}" ${k === selected ? 'selected' : ''}>${subjectNames[k]}</option>`
+        ).join('');
+    }
+
+    function getElectiveRowCount() {
+        return document.querySelectorAll('#subject-container .subject-row').length;
+    }
+
+    function updateSubjectControls() {
+        const count = getElectiveRowCount();
+        document.getElementById('subject-count').textContent =
+            `${count + 1} subjects total (English + ${count} elective${count !== 1 ? 's' : ''}) · max 6 for ATAR`;
+        document.getElementById('add-subject-btn').disabled = count >= MAX_ELECTIVE_SUBJECTS;
+        document.querySelectorAll('#subject-container .btn-remove').forEach(btn => {
+            btn.disabled = count <= MIN_ELECTIVE_SUBJECTS;
+        });
+    }
+
+    function addSubjectRow(selected = 'history', score = 30) {
+        if (getElectiveRowCount() >= MAX_ELECTIVE_SUBJECTS) return;
+
+        const row = document.createElement('div');
+        row.className = 'subject-row';
+        row.innerHTML = `
+            <select class="sub-name">${buildSubjectOptions(selected)}</select>
+            <input type="number" class="sub-score" value="${score}" min="0" max="50">
+            <div>
+                <div class="scaled-badge">0.0</div>
+                <div class="scaled-label">scaled</div>
+            </div>
+            <button type="button" class="btn-remove" title="Remove subject" onclick="removeSubjectRow(this)">×</button>
+        `;
+        document.getElementById('subject-container').appendChild(row);
+        row.querySelector('.sub-name').addEventListener('input', calculate);
+        row.querySelector('.sub-score').addEventListener('input', calculate);
+        updateSubjectControls();
+        calculate();
+    }
+
+    function removeSubjectRow(btn) {
+        if (getElectiveRowCount() <= MIN_ELECTIVE_SUBJECTS) return;
+        btn.closest('.subject-row').remove();
+        updateSubjectControls();
+        calculate();
+    }
+
+    function aggregateToAtar(aggregate) {
+        return Math.min(99.95, (aggregate / 205) * 100);
+    }
+
+    function computeAtarFromSubjects(subjectList) {
+        const englishSub = subjectList.find(s => s.isEnglish);
+        const others = subjectList.filter(s => !s.isEnglish).sort((a, b) => b.scaled - a.scaled);
+
+        const top4Sum = [englishSub, ...others.slice(0, 3)].reduce((sum, sub) => sum + sub.scaled, 0);
+        const fifthVal = others[3] ? others[3].scaled * 0.1 : 0;
+        const sixthVal = others[4] ? others[4].scaled * 0.1 : 0;
+        const aggregate = top4Sum + fifthVal + sixthVal;
+
+        return { aggregate, top4Sum, fifthVal, sixthVal, estimatedAtar: aggregateToAtar(aggregate) };
+    }
+
+    function readSubjectsFromCalculator() {
+        const subjects = [];
+        document.querySelectorAll('#panel-calculator .subject-row').forEach((row, index) => {
+            const isEnglish = index === 0;
+            const name = isEnglish ? 'english' : row.querySelector('.sub-name').value;
+            let raw = parseInt(row.querySelector('.sub-score').value) || 0;
+            raw = Math.min(50, Math.max(0, raw));
+            // const scaleAdj = mockScaling[name] ?? 0;
+            // const scaled = Math.min(55, Math.max(0, raw + scaleAdj));
+            const scaled = getScaledScore(name, raw);
+            if (row.querySelector('.scaled-badge')) {
+                row.querySelector('.scaled-badge').innerText = scaled.toFixed(1);
+            }
+            subjects.push({ name, raw, scaled, isEnglish });
+        });
+        return subjects;
+    }
+
+    function calculate() {
+        const courseId = document.getElementById('course-select').value;
+        const targetAtar = courses[courseId].target;
+        const subjects = readSubjectsFromCalculator();
+        const { aggregate, top4Sum, fifthVal, sixthVal, estimatedAtar } = computeAtarFromSubjects(subjects);
+        const englishSub = subjects.find(s => s.isEnglish);
+
+        document.getElementById('atar-result').innerText = estimatedAtar.toFixed(2);
+        document.getElementById('breakdown-text').innerHTML = `
+            <strong>Aggregate calculation:</strong><br>
+            Top 4 (incl. English): ${top4Sum.toFixed(1)}<br>
+            10% of 5th subject: ${fifthVal.toFixed(1)}<br>
+            10% of 6th subject: ${sixthVal.toFixed(1)}<br>
+            Total aggregate: <strong>${aggregate.toFixed(1)}</strong> / 210
+        `;
+
+        const gaugeFill = document.getElementById('gauge-fill');
+        gaugeFill.style.width = `${estimatedAtar}%`;
+        document.getElementById('target-marker').style.left = `${targetAtar}%`;
+
+        const diff = estimatedAtar - targetAtar;
+        const diffText = document.getElementById('distance-text');
+        if (diff >= 0) {
+            gaugeFill.style.backgroundColor = 'var(--success)';
+            diffText.innerHTML = `<span style="color:var(--success)">✅ ${diff.toFixed(2)} points above target</span>`;
+        } else {
+            gaugeFill.style.backgroundColor = 'var(--primary)';
+            diffText.innerHTML = `<span style="color:var(--danger)">⚠️ ${Math.abs(diff).toFixed(2)} points short of target</span>`;
+        }
+
+        const prereqContainer = document.getElementById('prereq-container');
+        prereqContainer.innerHTML = '';
+
+        courses[courseId].prereqs.forEach(req => {
+            let met = false;
+            let rawScore = 0;
+
+            if (req.name === 'English') {
+                rawScore = englishSub.raw;
+                met = rawScore >= req.min;
+            } else {
+                const foundSub = subjects.find(s => {
+                    if (Array.isArray(req.id)) return req.id.includes(s.name);
+                    return s.name === req.id;
+                });
+                if (foundSub) {
+                    rawScore = foundSub.raw;
+                    met = rawScore >= req.min;
+                }
+            }
+
+            prereqContainer.innerHTML += `
+                <div class="prereq-card ${met ? 'met' : ''}">
+                    <strong>${req.name} (min ${req.min})</strong><br>
+                    Current raw score: ${rawScore > 0 ? rawScore : 'Not taken'}
+                    ${met ? '✅' : '❌'}
+                </div>
+            `;
+        });
+    }
+
+    // --- Early Predictor ---
+    function naplanBandToScore(band) {
+        return Math.min(50, Math.max(0, 16 + band * 3));
+    }
+
+    function year10PercentToScore(percent) {
+        return Math.min(50, Math.max(0, 10 + percent * 0.4));
+    }
+
+    function blendScores(naplanScore, year10Score) {
+        const blended = naplanScore * 0.35 + year10Score * 0.65;
+        return Math.min(50, Math.max(0, Math.round((blended + 1.5) * 10) / 10));
+    }
+
+    function predictSubjectRawScore(subjectKey, naplan, y10) {
+        const englishNaplan = (naplan.reading + naplan.writing) / 2;
+        const generalNaplan = (naplan.reading + naplan.writing + naplan.numeracy) / 3;
+        const generalY10 = (y10.english + y10.maths + y10.science + y10.other) / 4;
+
+        const maps = {
+            english: () => blendScores(naplanBandToScore(englishNaplan), year10PercentToScore(y10.english)),
+            methods: () => blendScores(naplanBandToScore(naplan.numeracy), year10PercentToScore(y10.maths)),
+            specialist: () => blendScores(naplanBandToScore(naplan.numeracy + 0.5), year10PercentToScore(y10.maths + 5)),
+            general_maths: () => blendScores(naplanBandToScore(naplan.numeracy - 0.5), year10PercentToScore(y10.maths - 5)),
+            chemistry: () => blendScores(naplanBandToScore(naplan.numeracy), year10PercentToScore(y10.science)),
+            physics: () => blendScores(naplanBandToScore(naplan.numeracy), year10PercentToScore(y10.science)),
+            biology: () => blendScores(naplanBandToScore(generalNaplan), year10PercentToScore(y10.science)),
+            business: () => blendScores(naplanBandToScore(generalNaplan - 0.3), year10PercentToScore(y10.other)),
+            psychology: () => blendScores(naplanBandToScore(englishNaplan), year10PercentToScore(y10.other)),
+            history: () => blendScores(naplanBandToScore(englishNaplan), year10PercentToScore(y10.other)),
+            legal: () => blendScores(naplanBandToScore(englishNaplan), year10PercentToScore(y10.other)),
+            economics: () => blendScores(naplanBandToScore(naplan.numeracy), year10PercentToScore(y10.other)),
+            health: () => blendScores(naplanBandToScore(generalNaplan), year10PercentToScore(y10.other)),
+            pe: () => blendScores(naplanBandToScore(generalNaplan - 0.5), year10PercentToScore(y10.other)),
+            accounting: () => blendScores(naplanBandToScore(naplan.numeracy), year10PercentToScore(y10.other)),
+            it: () => blendScores(naplanBandToScore(naplan.numeracy), year10PercentToScore(y10.other)),
+            music: () => blendScores(naplanBandToScore(generalNaplan), year10PercentToScore(y10.other)),
+            art: () => blendScores(naplanBandToScore(generalNaplan), year10PercentToScore(y10.other)),
+            extended_investigation: () => blendScores(naplanBandToScore(englishNaplan), year10PercentToScore((y10.english + y10.other) / 2))
+        };
+
+        return (maps[subjectKey] || (() => blendScores(naplanBandToScore(generalNaplan), year10PercentToScore(generalY10))))();
+    }
+
+    function initPredictorSubjects() {
+        const container = document.getElementById('predictor-subjects');
+        const defaults = new Set(['methods', 'chemistry', 'business', 'psychology']);
+        
+        container.innerHTML = `<div class="subject-chip-grid">` +
+            Object.keys(subjectNames).map(key => `
+                <label style="margin: 0; padding: 0; display: block;">
+                    <input type="checkbox" class="predictor-sub-check" value="${key}" ${defaults.has(key) ? 'checked' : ''}>
+                    <div class="subject-chip-label">${subjectNames[key]}</div>
+                </label>
+            `).join('') + `</div>`;
+
+        container.addEventListener('change', (e) => {
+            if (!e.target.classList.contains('predictor-sub-check')) return;
+            const checked = container.querySelectorAll('.predictor-sub-check:checked');
+            if (checked.length > MAX_ELECTIVE_SUBJECTS) {
+                e.target.checked = false;
+                alert(`Select up to ${MAX_ELECTIVE_SUBJECTS} elective subjects (plus English).`);
+            }
+        });
+    }
+
+    function runPrediction() {
+        const naplan = {
+            reading: parseInt(document.getElementById('naplan-reading').value),
+            writing: parseInt(document.getElementById('naplan-writing').value),
+            numeracy: parseInt(document.getElementById('naplan-numeracy').value)
+        };
+        const y10 = {
+            english: parseFloat(document.getElementById('y10-english').value) || 0,
+            maths: parseFloat(document.getElementById('y10-maths').value) || 0,
+            science: parseFloat(document.getElementById('y10-science').value) || 0,
+            other: parseFloat(document.getElementById('y10-other').value) || 0
+        };
+
+        const selectedElectives = Array.from(document.querySelectorAll('.predictor-sub-check:checked'))
+            .map(el => el.value)
+            .slice(0, MAX_ELECTIVE_SUBJECTS);
+
+        if (selectedElectives.length === 0) {
+            alert('Please select at least one planned VCE subject.');
+            return;
+        }
+
+        const englishRaw = predictSubjectRawScore('english', naplan, y10);
+        const subjectList = [
+            { name: 'english', raw: englishRaw, scaled: Math.min(55, englishRaw + mockScaling.english), isEnglish: true }
+        ];
+
+        selectedElectives.forEach(key => {
+            const raw = predictSubjectRawScore(key, naplan, y10);
+            subjectList.push({
+                name: key,
+                raw,
+                scaled: Math.min(55, Math.max(0, raw + (mockScaling[key] ?? 0))),
+                isEnglish: false
+            });
+        });
+
+        const courseId = document.getElementById('predictor-course').value;
+        const targetAtar = courses[courseId].target;
+        const { estimatedAtar } = computeAtarFromSubjects(subjectList);
+
+        lastPrediction = { subjectList, selectedElectives, englishRaw, courseId };
+
+        const resultEl = document.getElementById('predictor-result');
+        resultEl.style.display = 'block';
+        
+        // Trigger fade animation
+        resultEl.classList.remove('fade-in-active');
+        void resultEl.offsetWidth; // Trigger DOM reflow
+        resultEl.classList.add('fade-in-active');
+        
+        document.getElementById('predictor-atar').innerText = estimatedAtar.toFixed(2);
+
+        const gap = estimatedAtar - targetAtar;
+        const gapEl = document.getElementById('predictor-target-gap');
+        if (gap >= 0) {
+            gapEl.innerHTML = `<span style="color: var(--success);">On track for ${courses[courseId].target} target (+${gap.toFixed(1)} above)</span>`;
+        } else {
+            gapEl.innerHTML = `<span style="color: var(--danger);">${Math.abs(gap).toFixed(1)} points below ${courses[courseId].target} target for selected pathway</span>`;
+        }
+
+        document.getElementById('predictor-scores').innerHTML = subjectList.map(s => `
+            <div class="predictor-score-chip">
+                ${s.isEnglish ? 'English' : subjectNames[s.name]}
+                <strong>${s.raw.toFixed(0)}</strong>
+                raw study score
+            </div>
+        `).join('');
+    }
+
+    function applyPredictionToCalculator() {
+        if (!lastPrediction) {
+            runPrediction();
+            if (!lastPrediction) return;
+        }
+
+        document.getElementById('course-select').value = lastPrediction.courseId;
+
+        const englishInput = document.querySelector('#panel-calculator .subject-row .sub-score');
+        englishInput.value = Math.round(lastPrediction.englishRaw);
+
+        document.getElementById('subject-container').innerHTML = '';
+        lastPrediction.selectedElectives.forEach(key => {
+            const sub = lastPrediction.subjectList.find(s => s.name === key);
+            addSubjectRow(key, Math.round(sub.raw));
+        });
+
+        if (getElectiveRowCount() === 0) {
+            addSubjectRow('methods', 30);
+        }
+
+        goToCalculator();
+        calculate();
+    }
+
+    // --- Init ---
+    const defaultSubs = ['methods', 'chemistry', 'business', 'psychology'];
+    defaultSubs.forEach(sub => addSubjectRow(sub, 30));
+
+    document.getElementById('subject-container').addEventListener('input', calculate);
+    document.querySelectorAll('#panel-calculator .subject-row .sub-score, #panel-calculator .subject-row .sub-name')
+        .forEach(el => el.addEventListener('input', calculate));
+    document.getElementById('course-select').addEventListener('change', calculate);
+
+    initPredictorSubjects();
+    document.querySelectorAll('#panel-predictor select, #panel-predictor input').forEach(el => {
+        el.addEventListener('change', () => {
+            const result = document.getElementById('predictor-result');
+            if (result.style.display !== 'none') runPrediction();
+        });
+    });
+
+    updateSubjectControls();
+    calculate();
+</script>
+</body>
+</html>
